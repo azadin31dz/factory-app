@@ -108,7 +108,7 @@ def init_db():
     
     cursor.execute("SELECT COUNT(*) FROM workers")
     if cursor.fetchone()[0] == 0:
-        cursor.executemany("INSERT INTO workers (name) VALUES (?)", [(f"عامل {i}",) for i in range(1, 6)])
+        cursor.executemany("INSERT INTO workers (name) VALUES (?)", [("عامل 1",), ("عامل 2",), ("عامل 3",)])
     cursor.execute("SELECT COUNT(*) FROM colors")
     if cursor.fetchone()[0] == 0:
         cursor.executemany("INSERT INTO colors (color_name) VALUES (?)", [("أسود",), ("رمادي",), ("بيج",), ("أخضر",)])
@@ -202,7 +202,7 @@ elif page == "⚙️ إدارة العمال والألوان":
                     cursor = conn.cursor()
                     cursor.execute("UPDATE workers SET name = ? WHERE name = ?", (new_name_input.strip(), worker_to_edit))
                     conn.commit()
-                    st.success(f"تم تغيير الاسم بنجاح من [{worker_to_edit}] إلى [{new_name_input}]!")
+                    st.success(f"تم تغيير الاسم بنجاح إلى [{new_name_input}]!")
                     st.rerun()
                 except:
                     st.error("⚠️ هذا الاسم موجود بالفعل لعامل آخر.")
@@ -217,11 +217,13 @@ elif page == "⚙️ إدارة العمال والألوان":
     if st.button("➕ إضافة العامل الجديد"):
         if new_worker.strip():
             try:
-                conn.execute("INSERT INTO workers (name) VALUES (?)", (new_worker.strip(),))
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO workers (name) VALUES (?)", (new_worker.strip(),))
                 conn.commit()
                 st.success(f"تمت إضافة العامل {new_worker} بنجاح!")
                 st.rerun()
-            except: st.error("⚠️ الاسم مسجل بالفعل.")
+            except:
+                st.error("⚠️ الاسم مسجل بالفعل.")
             
     st.write("---")
     
@@ -232,7 +234,6 @@ elif page == "⚙️ إدارة العمال والألوان":
         st.markdown('<div class="delete-btn">', unsafe_allow_html=True)
         if st.button("🗑️ حذف العامل المختار قطعيًا", use_container_width=True):
             cursor = conn.cursor()
-            # لضمان عدم حدوث مشاكل برمجية نقوم بحذفه أو جعله غير نشط
             cursor.execute("DELETE FROM workers WHERE name = ?", (worker_to_delete,))
             conn.commit()
             st.success(f"تم حذف العامل {worker_to_delete} من النظام.")
@@ -245,6 +246,22 @@ elif page == "⚙️ إدارة العمال والألوان":
     if st.button("➕ إضافة اللون"):
         if new_color.strip():
             try:
-                conn.execute("INSERT INTO colors (color_name) VALUES (?)", (new_color.strip(),))
+                cursor = conn.cursor()
+                cursor.execute("INSERT INTO colors (color_name) VALUES (?)", (new_color.strip(),))
                 conn.commit()
                 st.success(f"تمت إضافة اللون {new_color}!")
+                st.rerun()
+            except:
+                st.error("⚠️ اللون مضاف مسبقاً.")
+    conn.close()
+
+# --- 4. صفحة النسخ الاحتياطي ---
+elif page == "💾 نسخة احتياطية":
+    st.markdown("### 💾 حماية البيانات")
+    st.write("حمل ملف قاعدة البيانات لحفظه على هاتفك كنسخة احتياطية آمنة:")
+    try:
+        with open(DB_NAME, "rb") as f:
+            st.download_button("📥 تحميل نسخة احتياطية (.db)", f, file_name="factory_data.db", use_container_width=True)
+    except:
+        st.info("لا توجد بيانات للنسخ الاحتياطي حالياً.")
+    
