@@ -11,7 +11,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# --- التنسيق الجمالي الفاتح والعصري (Light Mode CSS) ---
+# --- التنسيق الجمالي الفاتح والعصري (تم تصحيح ألوان الخطوط هنا) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght=400;600;700;900&display=swap');
@@ -91,7 +91,7 @@ st.markdown("""
         font-weight: 700 !important;
     }
     .card-value-wages {
-        color: #D4AF37 !important; /* لون ذهبي داكن واضح على الخلفية الفاتحة */
+        color: #D4AF37 !important;
         font-size: 28px !important;
         font-weight: 700 !important;
     }
@@ -150,15 +150,19 @@ st.markdown("""
         box-shadow: 0 6px 16px rgba(229, 57, 53, 0.3) !important;
     }
     
-    /* تحسين الحقول والمدخلات في الوضع الفاتح */
-    .stSelectbox div, .stNumberInput div, .stTextInput div, .stDateInput div {
+    /* إصلاح جذري لألوان حقول المدخلات والخطوط لتصبح سوداء وواضحة جداً */
+    .stSelectbox div[data-baseweb="select"], .stNumberInput input, .stTextInput input, .stDateInput input {
         background-color: #FFFFFF !important;
-        color: #333333 !important;
+        color: #111111 !important; /* لون الخط أسود داكن */
         border-radius: 10px !important;
-        border: 1px solid #CCCCCC !important;
     }
     
-    /* تعديل نصوص التنبيهات */
+    /* التأكيد على ظهور النص داخل حقول الإدخال */
+    input {
+        color: #111111 !important;
+        -webkit-text-fill-color: #111111 !important;
+    }
+    
     .stAlert p {
         color: #333333 !important;
     }
@@ -354,7 +358,7 @@ elif page == "💾 الأمان والنسخ":
                 use_container_width=True
             )
     except:
-        st.info("لا توجد بياناتلة للتحميل حالياً.")
+        st.info("لا توجد بيانات متاحة للتحميل حالياً.")
         
     st.write("---")
     st.markdown("#### 2️⃣ استرجاع كافة السجلات السابقة بملف")
@@ -370,4 +374,3 @@ elif page == "💾 الأمان والنسخ":
                 st.rerun()
             except Exception as e:
                 st.error(f"حدث خطأ أثناء الرفع: {e}")
-    
